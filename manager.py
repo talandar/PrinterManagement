@@ -33,10 +33,9 @@ def connected():
 	status = res.status_code
 	if status != 200:
 		return False
-	print res.json()
 	realJson = json.loads(res.text)
 	state = realJson["current"]["state"]
-	print state
+	logging.debug("Current printer state is " + state)
 	if state=="Operational" or state=="Printing":
 		return True
 	return False
