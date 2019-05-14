@@ -1,6 +1,8 @@
 from __future__ import division
 import time
 import logging
+import json
+import requests
 
 # Import the WS2801 module.
 import Adafruit_WS2801
@@ -10,23 +12,40 @@ import Adafruit_GPIO.SPI as SPI
 logging.basicConfig(filename='printController.log',level=logging.DEBUG)
 logging.info('Initializing printer controller!')
 
-
-# Configure the count of pixels:
+# Setup LEDs
 PIXEL_COUNT = 23
-
-# The WS2801 library makes use of the BCM pin numbering scheme. See the README.md for details.
-
-# Specify a software SPI connection for Raspberry Pi on the following pins:
 PIXEL_CLOCK = 21
 PIXEL_DOUT  = 20
 pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
 
-for i in range(pixels.count()):
-    pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(255,255,255))
-pixels.show()
+# Setup Octoprint API/Requests
+OCTOPRINT_API_KEY = "398AFD2204874A208CB8EA5FCF1D5E9D"
+OCTOPRINT_API_URL = "http://127.0.0.1/api/"
+session = requests.Session()
+session.headers["X-Api-Key"] = OCTOPRINT_API_KEY
+session.headers["Content-Type"] = "application/json"
+session.keep_alive = False
 
-time.sleep(5)
 
-for i in range(pixels.count()):
-    pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(0,0,0))
-pixels.show()
+def connected():
+	res = session.get(OCTOPRINT_API_URL + "connection")
+	logging.info(res)
+
+
+
+
+def blink():
+	for i in range(pixels.count()):
+		pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(255,255,255))
+	pixels.show()
+
+	time.sleep(5)
+
+	for i in range(pixels.count()):
+		pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(0,0,0))
+	pixels.show()
+	
+def _main():
+	blink()
+	connected()
+		
