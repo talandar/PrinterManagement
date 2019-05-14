@@ -30,11 +30,16 @@ logging.info("setup connection?")
 
 def connected():
 	res = session.get(OCTOPRINT_API_URL + "connection")
-	status = res.statusCode
-	if status != 200
-		return false
-	print res.json
-	
+	status = res.status_code
+	if status != 200:
+		return False
+	print res.json()
+	realJson = json.loads(res.text)
+	state = realJson["current"]["state"]
+	print state
+	if state=="Operational" or state=="Printing":
+		return True
+	return False
 
 def blink():
 	for i in range(pixels.count()):
@@ -48,4 +53,6 @@ def blink():
 	pixels.show()
 
 #blink()
-connected()
+while True:
+	print connected()
+	time.sleep(1)
