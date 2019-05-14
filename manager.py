@@ -30,7 +30,11 @@ logging.info("setup connection?")
 
 def connected():
 	res = session.get(OCTOPRINT_API_URL + "connection")
-	logging.info("got response " + json.dumps(res))
+	status = res.statusCode
+	if status != 200
+		return false
+	print res.json
+	
 
 def blink():
 	for i in range(pixels.count()):
@@ -43,5 +47,5 @@ def blink():
 		pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(0,0,0))
 	pixels.show()
 
-blink()
+#blink()
 connected()
