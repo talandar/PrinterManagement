@@ -25,11 +25,12 @@ session = requests.Session()
 session.headers["X-Api-Key"] = OCTOPRINT_API_KEY
 session.headers["Content-Type"] = "application/json"
 session.keep_alive = False
+logging.info("setup connection?")
 
 
 def connected():
 	res = session.get(OCTOPRINT_API_URL + "connection")
-	logging.info(res)
+	logging.info("got response " + res)
 
 
 
