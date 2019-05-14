@@ -19,7 +19,7 @@ PIXEL_COUNT = 23
 # Specify a software SPI connection for Raspberry Pi on the following pins:
 PIXEL_CLOCK = 21
 PIXEL_DOUT  = 20
-pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT
+pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
 
 for i in range(pixels.count()):
     pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(255,255,255))
