@@ -17,6 +17,8 @@ PIXEL_COUNT = 23
 PIXEL_CLOCK = 21
 PIXEL_DOUT  = 20
 pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, clk=PIXEL_CLOCK, do=PIXEL_DOUT)
+ON_COLOR = Adafruit_WS2801.RGB_to_color(128,128,128)#64,64,64)#255,255,255)
+OFF_COLOR = Adafruit_WS2801.RGB_to_color(0,0,0)
 
 # Setup Octoprint API/Requests
 OCTOPRINT_API_KEY = "398AFD2204874A208CB8EA5FCF1D5E9D"
@@ -40,18 +42,18 @@ def connected():
 		return True
 	return False
 
-def blink():
-	for i in range(pixels.count()):
-		pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(255,255,255))
+def setColor(color):
+	for i in range(5,pixels.count()):
+		pixels.set_pixel(i,color)
 	pixels.show()
 
-	time.sleep(5)
 
-	for i in range(pixels.count()):
-		pixels.set_pixel(i,Adafruit_WS2801.RGB_to_color(0,0,0))
-	pixels.show()
 
-#blink()
 while True:
+	if connected():
+		setColor(ON_COLOR)
+	else:
+		setColor(OFF_COLOR)
+
 	print connected()
 	time.sleep(1)
