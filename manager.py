@@ -1,4 +1,5 @@
 from __future__ import division
+from gpiozero import Button
 import time
 import logging
 import json
@@ -27,33 +28,69 @@ session = requests.Session()
 session.headers["X-Api-Key"] = OCTOPRINT_API_KEY
 session.headers["Content-Type"] = "application/json"
 session.keep_alive = False
-logging.info("setup connection?")
+homeXYCommand = '{"command": "home","axes": ["x", "y"]}'
+pauseCommand = '{"command": "pause"}'
 
+logging.info("setup connection")
 
-def connected():
+# Seup Button
+button = Button(13)
+
+def status():
 	res = session.get(OCTOPRINT_API_URL + "connection")
 	status = res.status_code
 	if status != 200:
 		return False
 	realJson = json.loads(res.text)
 	state = realJson["current"]["state"]
-	logging.debug("Current printer state is " + state)
+	return state
+
+def connected(state):
 	if state=="Operational" or state=="Printing":
 		return True
 	return False
+
+def printing(state):
+	if state=="Printing":
+		return True
+	return False
+
+def filamentPresent():
+	return button.is_held
+
 
 def setColor(color):
 	for i in range(5,pixels.count()):
 		pixels.set_pixel(i,color)
 	pixels.show()
 
+def pausePrint():
+	print "pause"
+	session.post(OCTOPRINT_API_URL+"job",data=pauseCommand)
+
+def goXYHome():
+	print "gohome"
+	session.post(OCTOPRINT_API_URL+"printer/printhead",data=homeXYCommand)
 
 
+
+def filament_out_detected():
+
+	print "out!"
+	state = status()
+	if printing(state):
+		print "out and printing!"
+		pausePrint()
+		goXYHome()
+
+
+
+button.when_released = filament_out_detected
 while True:
-	if connected():
+	state = status()
+	if connected(state):
 		setColor(ON_COLOR)
 	else:
 		setColor(OFF_COLOR)
-
-	print connected()
 	time.sleep(1)
+
