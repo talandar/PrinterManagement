@@ -46,7 +46,7 @@ def status():
 	return state
 
 def connected(state):
-	if state=="Operational" or state=="Printing":
+	if state=="Operational" or state=="Printing" or state=="Paused":
 		return True
 	return False
 
@@ -81,6 +81,7 @@ def filament_out_detected():
 	if printing(state):
 		print "out and printing!"
 		pausePrint()
+		time.sleep(10)
 		goXYHome()
 
 
