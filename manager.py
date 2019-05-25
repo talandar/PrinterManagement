@@ -17,7 +17,7 @@ my_logger.setLevel(logging.DEBUG)
 
 handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=1000000, backupCount=2)
 my_logger.addHandler(handler)
-logging.info('Initializing printer controller!')
+my_logger.info('Initializing printer controller!')
 
 # Setup LEDs
 PIXEL_COUNT = 23
@@ -37,7 +37,7 @@ session.keep_alive = False
 homeXYCommand = '{"command": "home","axes": ["x", "y"]}'
 pauseCommand = '{"command": "pause"}'
 
-logging.info("setup connection")
+my_logger.info("setup connection")
 
 # Seup Button
 button = Button(13)
@@ -82,19 +82,21 @@ def goXYHome():
 
 def filament_out_detected():
 
-	log.info("detected no filament!")
+	my_logger.info("detected no filament!")
 	state = status()
 	if printing(state):
-		log.info("also detected printing!  Pausing print")
+		my_logger.info("also detected printing!  Pausing print")
 		pausePrint()
 		time.sleep(5)
-		log.info("going to XYHome for filament change")
+		my_logger.info("going to XYHome for filament change")
 		goXYHome()
 
 
 
 button.when_released = filament_out_detected
-log.info("start listening for filament out and connection")
+my_logger.info("waiting for octoprint to be ready")
+time.sleep(120)
+my_logger.info("start listening for filament out and connection")
 while True:
 	state = status()
 	if connected(state):
@@ -102,4 +104,3 @@ while True:
 	else:
 		setColor(OFF_COLOR)
 	time.sleep(1)
-
