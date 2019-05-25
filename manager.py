@@ -2,6 +2,7 @@ from __future__ import division
 from gpiozero import Button
 import time
 import logging
+import logging.handlers
 import json
 import requests
 
@@ -10,7 +11,12 @@ import Adafruit_WS2801
 import Adafruit_GPIO.SPI as SPI
 
 # Setup Logging
-logging.basicConfig(filename='printController.log',level=logging.DEBUG)
+LOG_FILENAME = 'printController.log'
+my_logger = logging.getLogger('PrintController')
+my_logger.setLevel(logging.DEBUG)
+
+handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=1000000, backupCount=2)
+my_logger.addHandler(handler)
 logging.info('Initializing printer controller!')
 
 # Setup LEDs
@@ -76,17 +82,19 @@ def goXYHome():
 
 def filament_out_detected():
 
-	print "out!"
+	log.info("detected no filament!")
 	state = status()
 	if printing(state):
-		print "out and printing!"
+		log.info("also detected printing!  Pausing print")
 		pausePrint()
-		time.sleep(10)
+		time.sleep(5)
+		log.info("going to XYHome for filament change")
 		goXYHome()
 
 
 
 button.when_released = filament_out_detected
+log.info("start listening for filament out and connection")
 while True:
 	state = status()
 	if connected(state):
